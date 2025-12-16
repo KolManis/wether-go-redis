@@ -14,10 +14,18 @@ import (
 
 const httpPort = ":8000"
 
+// https://api.open-meteo.com/v1/forecast?latitude=55.75222&longitude=37.61556&current=temperature_2m
+// https://geocoding-api.open-meteo.com/v1/search?name=Moscow&count=1&language=ru&dformat=json
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/{city}", func(w http.ResponseWriter, r *http.Request) {
+		// можно так еще c 1.24
+		// city := r.PathValue("city")
+		// fmt.Printf("Requasted city: %s\n", city)
+		city := chi.URLParam(r, "city")
+
+		fmt.Printf("Requasted city: %s\n", city)
 		_, err := w.Write([]byte("welcome"))
 		if err != nil {
 			log.Println(err)
@@ -50,7 +58,7 @@ func main() {
 	go func() {
 		defer wg.Done()
 
-		fmt.Println("Start cron", jobs[0].ID)
+		fmt.Println("Start cron", jobs[0].ID())
 		s.Start()
 	}()
 
